@@ -25,38 +25,42 @@
 			if($description == "" || $umsr == "" || $category == "" || $qty == "" || $price == "")
 			{
 				echo "<p>Sorry, description, unit of measurement, category, quantity, and price must not be empty. Please reload the page.</p>";	
-				exit;			
+				//exit;			
 			}
-			if(!is_numeric($qty))
+			else if(!is_numeric($qty) || !is_numeric($price2))
 			{
 				echo "<p>Sorry, Quantity on Hand must be a number. Please reload the page.</p>";
-				exit;
+				//exit;
 			}
-			if($qty < 0)
+			else if($qty < 0 || $price2 < 0)
 			{
 				echo "<p>Sorry, Quantity on Hand must not be less than to '0'. Please reload the page.</p>";
-				exit;
+				//exit;
 			}
-			if(($umsr == "pc" && fmod($qty,1) !==0.00) || ($umsr == "set" && fmod($qty,1) !==0.00) || ($umsr == "doz" && fmod($qty,1) !==0.00))
+			else if(($umsr == "pc" && fmod($qty,1) !==0.00) || ($umsr == "set" && fmod($qty,1) !==0.00) || ($umsr == "doz" && fmod($qty,1) !==0.00))
 			{
 				echo "<p>Sorry, Quantity on Hand for pc, set, and dozen must not have decimal values. Please reload the page.</p>";
-				exit;
+				//exit;
 			}
 			//error trapping end
-			$con = mysqli_connect("localhost", "root", "", "inventory");
-			if($con)
-			{
-				$sql = "insert into item (description, umsr, cid, qtyonhand, price) 
-						values ('".$description."', '".$umsr."', ".$category.", ".$qty.", ".$price.") ";
-				mysqli_query($con, $sql);
-				echo "<p>Item was saved successfully...</p>";
-				
-			}
 			else 
 			{
-				echo "<p>Error connecting to DB...</p>";
+				$con = mysqli_connect("localhost", "root", "", "inventory");
+				if($con)
+				{
+					$sql = "insert into item (description, umsr, cid, qtyonhand, price) 
+							values ('".$description."', '".$umsr."', ".$category.", ".$qty.", ".$price.") ";
+					mysqli_query($con, $sql);
+					echo "<p>Item was saved successfully...</p>";
+					
+				}
+				else 
+				{
+					echo "<p>Error connecting to DB...</p>";
+				}
+				mysqli_close($con);
 			}
-			mysqli_close($con);
+			
 		}
 	}
 

@@ -9,8 +9,29 @@
         //check if the connection was successful
         if($connection)	
         {
+            $sql = " select 
+                            item.iid,
+                            item.description,
+                            item.umsr,
+                            category.description,
+                            item.qtyonhand,
+                            item.price
+						 from
+							item left join category
+								on item.cid = category.cid
+                         where
+                            item.iid like '%".$keyword."%' or
+                            item.description like '%".$keyword."%' or
+                            item.umsr like '%".$keyword."%' or
+                            category.description like '%".$keyword."%' or
+                            item.qtyonhand like '%".$keyword."%' or
+                            item.price like '%".$keyword."%'
+						 order by
+                            item.iid,
+							item.description
+				";
             //get all the records from the student table
-            $records = mysqli_query($connection, "select * from item where iid like '%".$keyword."%' or description like '%".$keyword."%' or umsr like '%".$keyword."%' or cid like '%".$keyword."%' or qtyonhand like '%".$keyword."%' or price like '%".$keyword."%' order by iid, description");					
+            $records = mysqli_query($connection, $sql);					
             
             //check if there are records retrieved
             if(mysqli_num_rows($records) > 0)
@@ -42,7 +63,14 @@
                     echo "		<td>".$rec[0]."</td>";
                     echo "		<td>".$rec[1]."</td>";
                     echo "		<td>".$rec[2]."</td>";
-                    echo "		<td>".$rec[3]."</td>";
+                    if ($rec[3] == null) 
+                    {
+                        echo "		<td>FLD</td>"; //category
+                    }
+                    else
+                    {
+                        echo "		<td>".$rec[3]."</td>"; //category
+                    }
                     echo "		<td align='right'>".$rec[4]."</td>";
                     echo "		<td align='right'>".$rec[5]."</td>";
                     echo "		<td><a href='list_all.php?rec0=$rec[0]&rec1=$rec[1]&rec2=$rec[2]&rec3=$rec[3]&rec4=$rec[4]&rec5=$rec[5]'>Update</a></td>";

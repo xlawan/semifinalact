@@ -27,7 +27,7 @@
 							item.qtyonhand,
 							item.price
 						 from
-							item inner join category
+							item left join category
 								on item.cid = category.cid
 						 order by
 							item.description
@@ -57,7 +57,14 @@
 						echo "		<td>".$rec[0]."</td>"; //item id
 						echo "		<td>".$rec[1]."</td>"; //description
 						echo "		<td>".$rec[2]."</td>"; //unit of measurement
-						echo "		<td>".$rec[3]."</td>"; //category
+						if ($rec[3] == null) 
+						{
+							echo "		<td>FLD</td>"; //category
+						}
+						else
+						{
+							echo "		<td>".$rec[3]."</td>"; //category
+						}
 						echo "		<td align='right'>".$rec[4]."</td>"; //qty.
 						echo "		<td align='right'>".$rec[5]."</td>"; //price
 						echo "		<td><a href='list_all.php?rec0=$rec[0]&rec1=$rec[1]&rec2=$rec[2]&rec3=$rec[3]&rec4=$rec[4]&rec5=$rec[5]'>Update</a></td>";
