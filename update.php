@@ -1,11 +1,5 @@
 <?php
 	$itemid = 0;
-	$description = "";
-	$umsr = "";
-	$category = "";
-	$qty = "";
-	$price = "";
-	
 	if(isset($_GET["rec0"]))
 	{
 		$itemid = $_GET["rec0"];
@@ -27,24 +21,58 @@
 		$qty2 = trim($_POST["qtyonhand2"]);
 		$price2 = trim($_POST["price2"]);
 		
-		$con = mysqli_connect("localhost", "root", "", "inventory");
-		if($con)
+		//error trapping start
+		if($description2 == "" || $umsr2 == "" || $category2 == "" || $qty2 == "" || $price2 == "")
 		{
-			$sql = "UPDATE item
-					SET description='".$description2."',
-						umsr='".$umsr2."',
-						cid='".$category2."',
-						qtyonhand='".$qty2."',
-						price='".$price2."'
-					WHERE iid=".$itemid2."";
-			mysqli_query($con, $sql);
-			echo "<p>Item was updated successfully...</p>";
+			echo "<p>Sorry, description, unit of measurement, category, quantity, and price must not be empty. Please reload the page.</p>";	
+			//exit;			
 		}
+		else if(!is_numeric($qty2) || !is_numeric($price2))
+		{
+			echo "<p>Sorry, Quantity on Hand or Price must be a number. Please reload the page.</p>";
+			//exit;
+			//retainInputs();
+		}
+		else if($qty2 < 0 || $price2 < 0)
+		{
+			echo "<p>Sorry, Quantity on Hand or Price must not be less than to '0'. Please reload the page.</p>";
+			//exit;
+		}
+		else if(($umsr2 == "pc" && fmod($qty2,1) !==0.00) || ($umsr2 == "set" && fmod($qty2,1) !==0.00) || ($umsr2 == "doz" && fmod($qty2,1) !==0.00))
+		{
+			echo "<p>Sorry, Quantity on Hand for pc, set, and dozen must not have decimal values. Please reload the page.</p>";
+			//exit;
+		}
+		//error trapping end
 		else 
 		{
-			echo "<p>Error connecting to DB...</p>";
+			$con = mysqli_connect("localhost", "root", "", "inventory");
+			if($con)
+			{
+				$sql = "UPDATE item
+						SET description='".$description2."',
+							umsr='".$umsr2."',
+							cid='".$category2."',
+							qtyonhand='".$qty2."',
+							price='".$price2."'
+						WHERE iid=".$itemid2."";
+				mysqli_query($con, $sql);
+				echo "<p>Item was updated successfully...</p>";
+			}
+			else 
+			{
+				echo "<p>Error connecting to DB...</p>";
+			}
+			mysqli_close($con);
 		}
-		mysqli_close($con);
+		function retainInputs() {
+			// $itemid = $itemid2;
+			// $description = $_GET["rec1"];
+			// $umsr = $_GET["rec2"];
+			// $category = $_GET["rec3"];
+			// $qty = $_GET["rec4"];
+			// $price = $_GET["rec5"];
+		}
 	}
 
 ?>
